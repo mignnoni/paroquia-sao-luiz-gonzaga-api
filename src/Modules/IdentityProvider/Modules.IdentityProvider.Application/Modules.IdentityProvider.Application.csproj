@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Result" Version="10.1.0" />
+    <PackageReference Include="MassTransit" Version="8.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj" />
+    <ProjectReference Include="..\Modules.IdentityProvider.Domain\Modules.IdentityProvider.Domain.csproj" />
+    <ProjectReference Include="..\Modules.IdentityProvider.IntegrationEvents\Modules.IdentityProvider.IntegrationEvents.csproj" />
+  </ItemGroup>
+
 </Project>
