@@ -4,7 +4,11 @@
     {
         private List<IDomainEvent> _domainEvents = [];
 
-        protected Entity(TEntityId id) => Id = id;
+        protected Entity(TEntityId id)
+        {
+            Id = id;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         protected Entity()
         {
@@ -12,6 +16,8 @@
         }
 
         public TEntityId Id { get; init; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
 
         public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents?.AsReadOnly();
 
