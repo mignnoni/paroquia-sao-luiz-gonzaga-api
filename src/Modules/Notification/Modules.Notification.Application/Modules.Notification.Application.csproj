@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\IdentityProvider\Modules.IdentityProvider.IntegrationEvents\Modules.IdentityProvider.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\ParishManagement\Modules.ParishManagement.IntegrationEvents\Modules.ParishManagement.IntegrationEvents.csproj" />
+  </ItemGroup>
+
+</Project>
