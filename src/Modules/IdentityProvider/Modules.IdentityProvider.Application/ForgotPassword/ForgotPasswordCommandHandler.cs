@@ -1,7 +1,6 @@
 ﻿using Ardalis.Result;
 using BuildingBlocks.Application;
-using MassTransit;
-using MediatR;
+using BuildingBlocks.Application.EventBus;
 using Microsoft.AspNetCore.Identity;
 using Modules.IdentityProvider.Application.Common;
 using Modules.IdentityProvider.Domain.Users;
@@ -11,10 +10,10 @@ using System.Text.Json;
 
 namespace Modules.IdentityProvider.Application.ForgotPassword;
 
-internal sealed class ForgotPasswordCommandHandler(UserManager<User> userManager, IBus bus) : ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
+internal sealed class ForgotPasswordCommandHandler(UserManager<User> userManager, IEventBus bus) : ICommandHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
     private readonly UserManager<User> _userManager = userManager;
-    private readonly IBus _bus = bus;
+    private readonly IEventBus _bus = bus;
 
     public async Task<Result<ForgotPasswordResponse>> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -36,13 +35,13 @@ internal sealed class ForgotPasswordCommandHandler(UserManager<User> userManager
 
         var base64Token = Convert.ToBase64String(bytes);
 
-        await _bus.Publish(new ForgotPasswordIntegrationEvent(
-                Guid.NewGuid(),
-                DateTime.UtcNow,
-                user.FullName,
-                request.Email,
-                base64Token
-            ), cancellationToken);
+        //await _bus.Publish(new ForgotPasswordIntegrationEvent(
+        //        Guid.NewGuid(),
+        //        DateTime.UtcNow,
+        //        user.FullName,
+        //        request.Email,
+        //        base64Token
+        //    ), cancellationToken);
 
         return new ForgotPasswordResponse(request.Email, token);
     }

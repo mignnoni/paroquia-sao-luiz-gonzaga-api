@@ -1,4 +1,4 @@
-using BuildingBlocks.Infrastructure.RabbitMqInfra;
+using BuildingBlocks.Infrastructure.RabbitMQInfra;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.ParishManagement.IntegrationEvents.PendingMembers;
 
@@ -9,7 +9,7 @@ public static class NotificationConsumersInstaller
 {
     public static IServiceCollection AddConsumers(this IServiceCollection services)
     {
-        services.AddHostedService<RabbitMqConsumer<PendingMemberCreatedIntegrationEvent>>();
+        services.AddHostedService<RabbitMQConsumer<PendingMemberCreatedIntegrationEvent>>();
         return services;
     }
 }

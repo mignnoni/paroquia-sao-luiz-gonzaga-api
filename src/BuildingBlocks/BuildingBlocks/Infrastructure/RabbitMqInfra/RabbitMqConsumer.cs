@@ -7,11 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Application.EventBus;
 using Microsoft.Extensions.Logging;
 
-namespace BuildingBlocks.Infrastructure.RabbitMqInfra;
+namespace BuildingBlocks.Infrastructure.RabbitMQInfra;
 
-public class RabbitMqConsumer<TIntegrationEvent>(
+public class RabbitMQConsumer<TIntegrationEvent>(
     IServiceScopeFactory _serviceScopeFactory,
-    ILogger<RabbitMqConsumer<TIntegrationEvent>> _logger) : BackgroundService
+    ILogger<RabbitMQConsumer<TIntegrationEvent>> _logger) : BackgroundService
     where TIntegrationEvent : IIntegrationEvent
 {
     private IConnection? _connection;

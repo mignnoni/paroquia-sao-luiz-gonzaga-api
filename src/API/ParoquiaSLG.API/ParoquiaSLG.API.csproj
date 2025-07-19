@@ -20,4 +20,12 @@
 		</PackageReference>
 	</ItemGroup>
 
+	  <ItemGroup>
+		<ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj" />
+		<ProjectReference Include="..\..\Modules\ParishManagement\Modules.ParishManagement.Application\Modules.ParishManagement.Application.csproj" />
+		<ProjectReference Include="..\..\Modules\ParishManagement\Modules.ParishManagement.Infrastructure\Modules.ParishManagement.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\Modules\Notification\Modules.Notification.Infrastructure\Modules.Notification.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\Modules\IdentityProvider\Modules.IdentityProvider.Infrastructure\Modules.IdentityProvider.Infrastructure.csproj" />
+	</ItemGroup>
+
 </Project>

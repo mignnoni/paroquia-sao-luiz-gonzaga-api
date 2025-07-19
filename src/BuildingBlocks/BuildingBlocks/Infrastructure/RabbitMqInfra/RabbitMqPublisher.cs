@@ -4,9 +4,9 @@ using BuildingBlocks.Application.EventBus;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
-namespace BuildingBlocks.Infrastructure.RabbitMqInfra;
+namespace BuildingBlocks.Infrastructure.RabbitMQInfra;
 
-public class RabbitMqPublisher(ILogger<RabbitMqPublisher> _logger) : IEventBus, IAsyncDisposable
+public class RabbitMQPublisher(ILogger<RabbitMQPublisher> _logger) : IEventBus, IAsyncDisposable
 {
     private IConnection? _connection;
     private readonly ThreadLocal<IChannel> _threadLocalChannel = new(() => null!);

@@ -5,10 +5,12 @@ namespace BuildingBlocks.Persistence;
 
 public static class PersistenceServiceInstaller
 {
-    public static void AddPersistence(this IServiceCollection services)
+    public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
         services
             .AddMemoryCache()
             .ConfigureOptions<ConnectionStringSetup>();
+
+        return services;
     }
 }

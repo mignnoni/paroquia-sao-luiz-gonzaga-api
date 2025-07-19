@@ -5,7 +5,7 @@ namespace BuildingBlocks.Persistence.Options;
 
 public sealed class ConnectionStringSetup : IConfigureOptions<ConnectionStringOptions>
 {
-    private const string ConnectionStringName = "projectsDB";
+    private const string ConnectionStringName = "parishDB";
     private readonly IConfiguration _configuration;
 
     public ConnectionStringSetup(IConfiguration configuration) => _configuration = configuration;

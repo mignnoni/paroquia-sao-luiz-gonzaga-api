@@ -12,7 +12,6 @@ using BuildingBlocks.Persistence.Extensions;
 using Modules.IdentityProvider.Endpoints.PublicAPI;
 using BuildingBlocks.Persistence.Options;
 using Microsoft.Extensions.Options;
-using System;
 using Microsoft.Extensions.Configuration;
 using BuildingBlocks.Utilities;
 
@@ -21,7 +20,7 @@ namespace Modules.IdentityProvider.Infrastructure;
 
 public static class IdentityProviderModuleInstaller
 {
-    public static IServiceCollection AddUserModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIdentityProviderModule(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddScoped<IJwtProvider, JwtProvider>()
