@@ -1,51 +1,71 @@
 using System.Text;
 using System.Text.Json;
 using BuildingBlocks.Application.EventBus;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace BuildingBlocks.Infrastructure.RabbitMqInfra;
 
-public class RabbitMqPublisher(IConnection connection) : IEventBus, IAsyncDisposable
+public class RabbitMqPublisher(ILogger<RabbitMqPublisher> _logger) : IEventBus, IAsyncDisposable
 {
-    private readonly IConnection _connection = connection;
+    private IConnection? _connection;
     private readonly ThreadLocal<IChannel> _threadLocalChannel = new(() => null!);
 
     public async Task PublishAsync<TIntegrationEvent>(TIntegrationEvent integrationEvent, CancellationToken cancellationToken = default)
         where TIntegrationEvent : IIntegrationEvent
     {
+        await EnsureConnectedAsync(cancellationToken);
+
         var eventName = integrationEvent.GetType().Name;
+
         var channel = await GetOrCreateChannelAsync(cancellationToken);
 
         string message = JsonSerializer.Serialize(integrationEvent);
         var body = Encoding.UTF8.GetBytes(message);
 
         await channel.BasicPublishAsync(exchange: "event-bus", routingKey: eventName, body: body, cancellationToken: cancellationToken);
+
+        _logger.LogInformation("Evento {EventName} publicado com sucesso", eventName);
     }
 
-    public static async Task<RabbitMqPublisher> CreateConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task EnsureConnectedAsync(CancellationToken cancellationToken = default)
     {
-        var factory = new ConnectionFactory
+        try
         {
-            HostName = "localhost",
-        };
+            if (_connection is null || !_connection.IsOpen)
+            {
+                if (_connection is not null)
+                    await _connection.DisposeAsync();
 
-        var connection = await factory.CreateConnectionAsync(cancellationToken);
+                var factory = new ConnectionFactory
+                {
+                    HostName = "localhost",
+                };
 
-        return new RabbitMqPublisher(connection);
+                _connection = await factory.CreateConnectionAsync(cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao estabelecer conexão com o RabbitMQ");
+            throw;
+        }
     }
 
     private async Task<IChannel> GetOrCreateChannelAsync(CancellationToken cancellationToken)
     {
         var channel = _threadLocalChannel.Value;
-        if (channel == null || channel.IsClosed)
+
+        if (channel is null || channel.IsClosed)
         {
-            if (channel != null)
+            if (channel is not null)
                 await channel.DisposeAsync();
 
-            channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+            channel = await _connection!.CreateChannelAsync(cancellationToken: cancellationToken);
             await channel.ExchangeDeclareAsync(exchange: "event-bus", type: ExchangeType.Direct, cancellationToken: cancellationToken);
             _threadLocalChannel.Value = channel;
         }
+
         return channel;
     }
 
@@ -53,7 +73,7 @@ public class RabbitMqPublisher(IConnection connection) : IEventBus, IAsyncDispos
     {
         foreach (var channel in _threadLocalChannel.Values)
         {
-            if (channel != null)
+            if (channel is not null)
             {
                 if (channel.IsOpen)
                     await channel.CloseAsync();
@@ -61,7 +81,7 @@ public class RabbitMqPublisher(IConnection connection) : IEventBus, IAsyncDispos
             }
         }
 
-        if (_connection != null)
+        if (_connection is not null)
         {
             if (_connection.IsOpen)
                 await _connection.CloseAsync();

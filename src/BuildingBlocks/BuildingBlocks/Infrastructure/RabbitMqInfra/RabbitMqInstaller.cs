@@ -6,13 +6,10 @@ namespace BuildingBlocks.Infrastructure.RabbitMqInfra;
 
 public static class RabbitMqInstaller
 {
-    public static void AddRabbitMq(this IServiceCollection services)
+    public static IServiceCollection AddRabbitMq(this IServiceCollection services)
     {
-        services.AddSingleton<IHostedService, RabbitMqHostedService>();
-        services.AddSingleton<IEventBus>(sp =>
-        {
-            var hostedService = sp.GetRequiredService<RabbitMqHostedService>();
-            return hostedService.Publisher;
-        });
+        services.AddSingleton<IEventBus, RabbitMqPublisher>();
+
+        return services;
     }
 }

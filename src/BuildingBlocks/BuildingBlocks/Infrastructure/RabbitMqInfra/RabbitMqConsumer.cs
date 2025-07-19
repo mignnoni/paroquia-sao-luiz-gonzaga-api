@@ -1,24 +1,24 @@
 using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
-using Modules.ParishManagement.IntegrationEvents.PendingMembers;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.DependencyInjection;
 using BuildingBlocks.Application.EventBus;
 using Microsoft.Extensions.Logging;
 
-namespace Modules.Notification.Infrastructure.ParishManagement;
+namespace BuildingBlocks.Infrastructure.RabbitMqInfra;
 
-public class PendingMemberCreatedConsumer(
-    IServiceProvider _serviceProvider,
-    ILogger<PendingMemberCreatedConsumer> _logger) : BackgroundService
+public class RabbitMqConsumer<TIntegrationEvent>(
+    IServiceScopeFactory _serviceScopeFactory,
+    ILogger<RabbitMqConsumer<TIntegrationEvent>> _logger) : BackgroundService
+    where TIntegrationEvent : IIntegrationEvent
 {
     private IConnection? _connection;
     private IChannel? _channel;
-    private const string ExchangeName = "event-bus";
-    private const string QueueName = "pending-member-created-queue";
-    private const string RoutingKey = "PendingMemberCreatedIntegrationEvent";
+    private readonly string _exchangeName = "event-bus";
+    private readonly string _queueName = $"{typeof(TIntegrationEvent).Name}-queue";
+    private readonly string _routingKey = typeof(TIntegrationEvent).Name;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -26,9 +26,15 @@ public class PendingMemberCreatedConsumer(
         {
             try
             {
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Tentando conectar ao RabbitMQ...");
+                _logger.LogInformation("{ConsumerName} Tentando conectar ao RabbitMQ...", _queueName);
                 await EnsureConnectedWithRetryAsync(stoppingToken);
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Conectado ao RabbitMQ com sucesso.");
+                _logger.LogInformation("{ConsumerName} Conectado ao RabbitMQ com sucesso.", _queueName);
+
+                if (_channel == null)
+                {
+                    _logger.LogError("{ConsumerName} Canal não foi inicializado corretamente.", _queueName);
+                    continue;
+                }
 
                 var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -38,53 +44,64 @@ public class PendingMemberCreatedConsumer(
                     {
                         var body = ea.Body.ToArray();
                         var message = Encoding.UTF8.GetString(body);
-                        _logger.LogInformation("[PendingMemberCreatedConsumer] Mensagem recebida: {Message}", message);
+                        _logger.LogInformation("{ConsumerName} Mensagem recebida.", _queueName);
 
-                        var integrationEvent = JsonSerializer.Deserialize<PendingMemberCreatedIntegrationEvent>(message);
-                        var handler = _serviceProvider.GetRequiredService<IIntegrationEventHandler<PendingMemberCreatedIntegrationEvent>>();
+                        var integrationEvent = JsonSerializer.Deserialize<TIntegrationEvent>(message);
+
+                        using var scope = _serviceScopeFactory.CreateScope();
+                        var handler = scope.ServiceProvider.GetRequiredService<IIntegrationEventHandler<TIntegrationEvent>>();
 
                         if (integrationEvent is not null)
                         {
                             await handler.Handle(integrationEvent, stoppingToken);
-                            _logger.LogInformation("[PendingMemberCreatedConsumer] Evento processado com sucesso.");
+                            _logger.LogInformation("{ConsumerName} Evento processado com sucesso.", _queueName);
                         }
                         else
                         {
-                            _logger.LogWarning("[PendingMemberCreatedConsumer] Evento de integração nulo após deserialização.");
+                            _logger.LogWarning("{ConsumerName} Evento de integração nulo após deserialização.", _queueName);
                         }
 
-                        await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+                        if (_channel?.IsOpen == true)
+                        {
+                            await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "[PendingMemberCreatedConsumer] Erro ao processar mensagem. Nack enviado.");
+                        _logger.LogError(ex, "{ConsumerName} Erro ao processar mensagem. Nack enviado.", _queueName);
                         try
                         {
-                            await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
+                            if (_channel?.IsOpen == true)
+                            {
+                                await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
+                            }
                         }
                         catch (Exception nackEx)
                         {
-                            _logger.LogError(nackEx, "[PendingMemberCreatedConsumer] Erro ao enviar Nack.");
+                            _logger.LogError(nackEx, "{ConsumerName} Erro ao enviar Nack.", _queueName);
                         }
                     }
                 };
 
-                await _channel.BasicConsumeAsync(queue: QueueName, autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
+                if (_channel?.IsOpen == true)
+                {
+                    await _channel.BasicConsumeAsync(queue: _queueName, autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
+                }
 
                 while (_connection?.IsOpen == true && _channel?.IsOpen == true && !stoppingToken.IsCancellationRequested)
                 {
                     await Task.Delay(1000, stoppingToken);
                 }
-                _logger.LogWarning("[PendingMemberCreatedConsumer] Conexão ou canal fechados. Tentando reconectar...");
+                _logger.LogWarning("{ConsumerName} Conexão ou canal fechados. Tentando reconectar...", _queueName);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Cancelamento solicitado. Encerrando consumidor.");
+                _logger.LogInformation("{ConsumerName} Cancelamento solicitado. Encerrando consumidor.", _queueName);
                 break;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[PendingMemberCreatedConsumer] Erro inesperado. Tentando reconectar em 5 segundos...");
+                _logger.LogError(ex, "{ConsumerName} Erro inesperado. Tentando reconectar em 5 segundos...", _queueName);
                 await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
             finally
@@ -119,12 +136,12 @@ public class PendingMemberCreatedConsumer(
             {
                 var factory = new ConnectionFactory { HostName = "localhost" };
                 _connection = await factory.CreateConnectionAsync(cancellationToken);
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Conexão estabelecida com RabbitMQ.");
+                _logger.LogInformation("{ConsumerName} Conexão estabelecida com RabbitMQ.", _queueName);
                 retryDelay = initialRetryDelay;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[PendingMemberCreatedConsumer] Falha ao conectar ao RabbitMQ. Tentando novamente em {RetryDelay} segundos...", retryDelay);
+                _logger.LogError(ex, "{ConsumerName} Falha ao conectar ao RabbitMQ. Tentando novamente em {RetryDelay} segundos...", _queueName, retryDelay);
                 await Task.Delay(TimeSpan.FromSeconds(retryDelay), cancellationToken);
                 retryDelay = Math.Min(retryDelay * 2, maxRetryDelay);
             }
@@ -132,16 +149,16 @@ public class PendingMemberCreatedConsumer(
 
         if (_connection == null || !_connection.IsOpen)
         {
-            throw new Exception("[PendingMemberCreatedConsumer] Não foi possível conectar ao RabbitMQ.");
+            throw new Exception($"{_queueName} Não foi possível conectar ao RabbitMQ.");
         }
 
         if ((_channel == null || !_channel.IsOpen) && !cancellationToken.IsCancellationRequested)
         {
             _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
-            await _channel.ExchangeDeclareAsync(ExchangeName, ExchangeType.Direct, cancellationToken: cancellationToken);
-            await _channel.QueueDeclareAsync(QueueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
-            await _channel.QueueBindAsync(QueueName, ExchangeName, RoutingKey, cancellationToken: cancellationToken);
-            _logger.LogInformation("[PendingMemberCreatedConsumer] Canal criado e fila vinculada.");
+            await _channel.ExchangeDeclareAsync(_exchangeName, ExchangeType.Direct, cancellationToken: cancellationToken);
+            await _channel.QueueDeclareAsync(_queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
+            await _channel.QueueBindAsync(_queueName, _exchangeName, _routingKey, cancellationToken: cancellationToken);
+            _logger.LogInformation("{ConsumerName} Canal criado e fila vinculada.", _queueName);
         }
     }
 
@@ -152,24 +169,24 @@ public class PendingMemberCreatedConsumer(
             if (_channel?.IsOpen == true)
             {
                 await _channel.CloseAsync();
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Canal fechado.");
+                _logger.LogInformation("{ConsumerName} Canal fechado.", _queueName);
             }
             if (_connection?.IsOpen == true)
             {
                 await _connection.CloseAsync();
-                _logger.LogInformation("[PendingMemberCreatedConsumer] Conexão fechada.");
+                _logger.LogInformation("{ConsumerName} Conexão fechada.", _queueName);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "[PendingMemberCreatedConsumer] Erro ao fechar canal/conexão.");
+            _logger.LogWarning(ex, "{ConsumerName} Erro ao fechar canal/conexão.", _queueName);
         }
         finally
         {
             _channel?.Dispose();
             _connection?.Dispose();
-            _channel = null;
             _connection = null;
+            _channel = null;
         }
     }
 }
