@@ -1,3 +1,4 @@
+using BuildingBlocks.Application.Behaviors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +9,12 @@ public static class ApplicationInstaller
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
-            .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly))
+            .AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly);
+
+                cfg.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+            })
             .AddValidatorsFromAssembly(Application.AssemblyReference.Assembly);
 
         return services;

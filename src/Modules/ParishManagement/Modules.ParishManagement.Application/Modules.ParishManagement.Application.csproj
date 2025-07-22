@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Modules.ParishManagement.IntegrationEvents\Modules.ParishManagement.IntegrationEvents.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Masses\Schedules\CreateMassSchedule\" />
+  </ItemGroup>
+
 </Project>
