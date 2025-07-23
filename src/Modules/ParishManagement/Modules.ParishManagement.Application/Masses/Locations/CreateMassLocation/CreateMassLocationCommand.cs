@@ -2,6 +2,7 @@ using Ardalis.Result;
 using BuildingBlocks.Application;
 using BuildingBlocks.Domain;
 using Microsoft.Extensions.Logging;
+using Modules.ParishManagement.Application.Masses.Specifications;
 using Modules.ParishManagement.Domain.Abstractions;
 using Modules.ParishManagement.Domain.Masses;
 
@@ -30,6 +31,13 @@ internal class CreateMassLocationCommandHandler(
             return Result.Error(result.Errors.First());
 
         var massLocation = result.Value;
+
+        if (massLocation.IsHeadquarters)
+        {
+            var headquarters = await _repository.FirstOrDefaultAsync(new GetMassLocationHeadQuartersSpec(), cancellationToken);
+
+            headquarters?.SetIsHeadquarters(false);
+        }
 
         foreach (var schedule in request.MassSchedules)
         {

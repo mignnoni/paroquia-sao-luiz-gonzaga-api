@@ -40,7 +40,7 @@ public class MassLocation : Entity<MassLocationId>
 
         if (string.IsNullOrWhiteSpace(address))
             return Result.Error("Endereço da localização é obrigatório");
-            
+
         Name = name;
         Address = address;
         IsHeadquarters = isHeadquarters;
@@ -69,5 +69,14 @@ public class MassLocation : Entity<MassLocationId>
         _massSchedules.Add(schedule);
 
         return Result.Success();
+    }
+
+    public void SetIsHeadquarters(bool isHeadquarters)
+    {
+        if (IsHeadquarters == isHeadquarters)
+            return;
+
+        IsHeadquarters = isHeadquarters;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -17,7 +17,7 @@
 
         public TEntityId Id { get; init; }
         public DateTime CreatedAt { get; private set; }
-        public DateTime? UpdatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; protected set; }
 
         public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents?.AsReadOnly();
 

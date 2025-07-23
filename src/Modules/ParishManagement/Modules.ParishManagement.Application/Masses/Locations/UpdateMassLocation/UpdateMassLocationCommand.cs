@@ -26,6 +26,13 @@ internal class UpdateMassLocationCommandHandler(
         if (massLocation is null)
             return Result.Error("Local de missas não encontrado");
 
+        if (!massLocation.IsHeadquarters && request.IsHeadquarters)
+        {
+            var headquarters = await _repository.FirstOrDefaultAsync(new GetMassLocationHeadQuartersSpec(), cancellationToken);
+
+            headquarters?.SetIsHeadquarters(false);
+        }
+
         var result = massLocation.Update(request.Name, request.Address, request.IsHeadquarters);
 
         if (!result.IsSuccess)
