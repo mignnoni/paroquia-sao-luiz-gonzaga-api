@@ -7,6 +7,8 @@ using Modules.ParishManagement.Persistence.Constants;
 using BuildingBlocks.Persistence.Extensions;
 using Modules.ParishManagement.Domain.Abstractions;
 using Modules.ParishManagement.Persistence.Repositories;
+using Modules.ParishManagement.Domain.Masses;
+using BuildingBlocks.Domain;
 
 namespace Modules.ParishManagement.Infrastructure.ServiceInstallers;
 
@@ -25,6 +27,7 @@ public static class PersistenceInstaller
         services.AddScoped<IPendingMemberRepository, PendingMemberRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRepository<MassLocation>, GenericRepository<MassLocation>>();
     }
 
     private static void AddDatabase(this IServiceCollection services)

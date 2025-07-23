@@ -33,11 +33,26 @@ public class MassLocation : Entity<MassLocationId>
         return Result.Success(new MassLocation(name, address, isHeadquarters));
     }
 
+    public Result Update(string name, string address, bool isHeadquarters)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Error("Nome da localização é obrigatório");
+
+        if (string.IsNullOrWhiteSpace(address))
+            return Result.Error("Endereço da localização é obrigatório");
+            
+        Name = name;
+        Address = address;
+        IsHeadquarters = isHeadquarters;
+
+        return Result.Success();
+    }
+
     public Result AddSchedule(string day, List<TimeOnly> massTimes)
     {
         if (string.IsNullOrWhiteSpace(day))
             return Result.Error("É obrigatório informar o dia da programação de missas");
-            
+
         if (_massSchedules.Any(s => s.Day == day))
             return Result.Error($"Já existe uma programação de missas para {day}");
 

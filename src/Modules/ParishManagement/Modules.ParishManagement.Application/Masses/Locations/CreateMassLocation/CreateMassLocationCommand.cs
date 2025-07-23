@@ -1,5 +1,7 @@
 using Ardalis.Result;
 using BuildingBlocks.Application;
+using BuildingBlocks.Domain;
+using Microsoft.Extensions.Logging;
 using Modules.ParishManagement.Domain.Abstractions;
 using Modules.ParishManagement.Domain.Masses;
 
@@ -16,8 +18,9 @@ public record MassScheduleInput(
     List<TimeOnly> MassTimes);
 
 internal class CreateMassLocationCommandHandler(
-    IMassLocationRepository _repository,
-    IUnitOfWork _unitOfWork) : ICommandHandler<CreateMassLocationCommand>
+    IRepository<MassLocation> _repository,
+    IUnitOfWork _unitOfWork,
+    ILogger<CreateMassLocationCommandHandler> _logger) : ICommandHandler<CreateMassLocationCommand>
 {
     public async Task<Result> Handle(CreateMassLocationCommand request, CancellationToken cancellationToken)
     {
@@ -39,6 +42,8 @@ internal class CreateMassLocationCommandHandler(
         _repository.Add(massLocation);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Local de missas criado com sucesso: {MassLocationId}", massLocation.Id);
 
         return Result.Success();
     }

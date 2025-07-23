@@ -14,6 +14,8 @@ public static class ApplicationInstaller
                 cfg.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly);
 
                 cfg.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+
+                cfg.AddOpenBehavior(typeof(LoggingPipelineBehavior<,>));
             })
             .AddValidatorsFromAssembly(Application.AssemblyReference.Assembly);
 
