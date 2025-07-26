@@ -20,7 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Masses\Schedules\CreateMassSchedule\" />
+    <Folder Include="Masses\Locations\DeleteMassLocation\" />
+    <Folder Include="Masses\Schedules\AddScheduleToLocation\" />
+    <Folder Include="Masses\Schedules\RemoveScheduleFromLocation\" />
+    <Folder Include="Masses\Schedules\UpdateSchedule\" />
+    <Folder Include="Masses\Times\AddTimeToSchedule\" />
+    <Folder Include="Masses\Times\RemoveTimeFromSchedule\" />
   </ItemGroup>
 
 </Project>

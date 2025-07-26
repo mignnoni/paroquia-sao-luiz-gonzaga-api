@@ -14,7 +14,7 @@ public record UpdateMassLocationCommand(
     bool IsHeadquarters) : ICommand;
 
 internal class UpdateMassLocationCommandHandler(
-    IRepository<MassLocation> _repository,
+    IMassLocationRepository _repository,
     IUnitOfWork _unitOfWork) : ICommandHandler<UpdateMassLocationCommand>
 {
     public async Task<Result> Handle(UpdateMassLocationCommand request, CancellationToken cancellationToken)

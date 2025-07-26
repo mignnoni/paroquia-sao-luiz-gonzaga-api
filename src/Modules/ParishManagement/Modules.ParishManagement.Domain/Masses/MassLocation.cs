@@ -79,4 +79,64 @@ public class MassLocation : Entity<MassLocationId>
         IsHeadquarters = isHeadquarters;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public Result UpdateMassTime(Guid massScheduleId, Guid massTimeId, TimeOnly massTime)
+    {
+        var schedule = _massSchedules.FirstOrDefault(s => s.Id == massScheduleId);
+
+        if (schedule is null)
+            return Result.Error("Programação de missas não encontrada");
+
+        return schedule.UpdateMassTime(massTimeId, massTime);
+    }
+
+    public Result AddTimeToSchedule(Guid massScheduleId, TimeOnly massTime)
+    {
+        var schedule = _massSchedules.FirstOrDefault(s => s.Id == massScheduleId);
+
+        if (schedule is null)
+            return Result.Error("Programação de missas não encontrada");
+
+        return schedule.AddMassTime(massTime);
+    }
+
+    public Result RemoveTimeFromSchedule(Guid massScheduleId, Guid massTimeId)
+    {
+        var schedule = _massSchedules.FirstOrDefault(s => s.Id == massScheduleId);
+
+        if (schedule is null)
+            return Result.Error("Programação de missas não encontrada");
+
+        return schedule.RemoveMassTime(massTimeId);
+    }
+
+    public Result RemoveSchedule(Guid massScheduleId)
+    {
+        var schedule = _massSchedules.FirstOrDefault(s => s.Id == massScheduleId);
+
+        if (schedule is null)
+            return Result.Error("Programação de missas não encontrada");
+
+        _massSchedules.Remove(schedule);
+
+        return Result.Success();
+    }
+
+    public Result UpdateSchedule(Guid massScheduleId, string day)
+    {
+        if (string.IsNullOrWhiteSpace(day))
+            return Result.Error("É obrigatório informar o dia da programação de missas");
+
+        var schedule = _massSchedules.FirstOrDefault(s => s.Id == massScheduleId);
+
+        if (schedule is null)
+            return Result.Error("Programação de missas não encontrada");
+
+        if (_massSchedules.Any(s => s.Id != massScheduleId && s.Day == day))
+            return Result.Error($"Já existe uma programação de missas para {day}");
+
+        schedule.UpdateDay(day);
+
+        return Result.Success();
+    }
 }

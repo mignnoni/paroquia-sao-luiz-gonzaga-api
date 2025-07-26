@@ -36,4 +36,33 @@ public class MassSchedule : Entity<Guid>
 
         return Result.Success();
     }
+
+    internal Result UpdateMassTime(Guid massTimeId, TimeOnly massTime)
+    {
+        var time = _massTimes.FirstOrDefault(t => t.Id == massTimeId);
+
+        if (time is null)
+            return Result.Error($"Horário de missa não encontrado para a programação de missas {Day}");
+
+        time.Update(massTime);
+
+        return Result.Success();
+    }
+
+    internal Result RemoveMassTime(Guid massTimeId)
+    {
+        var time = _massTimes.FirstOrDefault(t => t.Id == massTimeId);
+
+        if (time is null)
+            return Result.Error($"Horário de missa não encontrado para a programação de missas {Day}");
+
+        _massTimes.Remove(time);
+
+        return Result.Success();
+    }
+
+    internal void UpdateDay(string day)
+    {
+        Day = day;
+    }
 }

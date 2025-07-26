@@ -27,7 +27,7 @@ public static class PersistenceInstaller
         services.AddScoped<IPendingMemberRepository, PendingMemberRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IRepository<MassLocation>, GenericRepository<MassLocation>>();
+        services.AddScoped<IMassLocationRepository, MassLocationRepository>();
     }
 
     private static void AddDatabase(this IServiceCollection services)
