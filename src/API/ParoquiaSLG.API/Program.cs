@@ -1,4 +1,3 @@
-using System.Threading.RateLimiting;
 using Ardalis.Result.AspNetCore;
 using BuildingBlocks.Infrastructure.RabbitMQInfra;
 using BuildingBlocks.Persistence.Options;
@@ -16,7 +15,7 @@ builder.Services
     .ConfigureOptions<ConnectionStringSetup>()
     .AddRabbitMQ()
     .AddIdentityProviderModule(builder.Configuration)
-    .AddParishManagementModule()
+    .AddParishManagementModule(builder.Configuration)
     .AddNotificationModule();
 
 var app = builder.Build();
