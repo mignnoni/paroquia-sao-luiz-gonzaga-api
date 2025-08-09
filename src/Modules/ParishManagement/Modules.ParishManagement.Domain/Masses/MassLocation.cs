@@ -5,7 +5,7 @@ namespace Modules.ParishManagement.Domain.Masses;
 
 public class MassLocation : Entity<MassLocationId>
 {
-    private MassLocation(string name, string address, bool isHeadquarters)
+    private MassLocation(MassLocationId id, string name, string address, bool isHeadquarters) : base(id)
     {
         Name = name;
         Address = address;
@@ -22,7 +22,7 @@ public class MassLocation : Entity<MassLocationId>
     private readonly List<MassSchedule> _massSchedules = [];
     public IReadOnlyCollection<MassSchedule> MassSchedules => _massSchedules.AsReadOnly();
 
-    public static Result<MassLocation> Create(string name, string address, bool isHeadquarters)
+    public static Result<MassLocation> Create(MassLocationId id, string name, string address, bool isHeadquarters)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result.Error("Nome da localização é obrigatório");
@@ -30,7 +30,7 @@ public class MassLocation : Entity<MassLocationId>
         if (string.IsNullOrWhiteSpace(address))
             return Result.Error("Endereço da localização é obrigatório");
 
-        return Result.Success(new MassLocation(name, address, isHeadquarters));
+        return Result.Success(new MassLocation(id, name, address, isHeadquarters));
     }
 
     public Result Update(string name, string address, bool isHeadquarters)
@@ -44,6 +44,7 @@ public class MassLocation : Entity<MassLocationId>
         Name = name;
         Address = address;
         IsHeadquarters = isHeadquarters;
+        UpdatedAt = DateTime.UtcNow;
 
         return Result.Success();
     }
@@ -56,7 +57,7 @@ public class MassLocation : Entity<MassLocationId>
         if (_massSchedules.Any(s => s.Day == day))
             return Result.Error($"Já existe uma programação de missas para {day}");
 
-        var schedule = MassSchedule.Create(Id, day);
+        var schedule = MassSchedule.Create(Guid.NewGuid(), Id, day);
 
         foreach (var time in massTimes)
         {

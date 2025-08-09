@@ -1,6 +1,7 @@
+using System.Threading.RateLimiting;
 using Ardalis.Result.AspNetCore;
 using BuildingBlocks.Infrastructure.RabbitMQInfra;
-using BuildingBlocks.Persistence;
+using BuildingBlocks.Persistence.Options;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Modules.IdentityProvider.Infrastructure;
@@ -12,7 +13,7 @@ using Modules.ParishManagement.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddPersistence()
+    .ConfigureOptions<ConnectionStringSetup>()
     .AddRabbitMQ()
     .AddIdentityProviderModule(builder.Configuration)
     .AddParishManagementModule()

@@ -1,14 +1,10 @@
 ﻿using Ardalis.Result;
 using BuildingBlocks.Application;
 using BuildingBlocks.Application.EventBus;
-using MassTransit;
 using Microsoft.AspNetCore.Identity;
-using Modules.IdentityProvider.Application.Common;
 using Modules.IdentityProvider.Domain.Extensions;
 using Modules.IdentityProvider.Domain.Users;
 using Modules.IdentityProvider.IntegrationEvents;
-using System.Text;
-using System.Text.Json;
 
 namespace Modules.IdentityProvider.Application.ResetPassword;
 
@@ -34,12 +30,12 @@ internal sealed class ResetPasswordCommandHandler(UserManager<User> userManager,
         if (!result.Succeeded)
             return Result.Invalid(result.GetValidationErrors());
 
-        //await _bus.Publish(new PasswordResetedIntegrationEvent(
-        //    Guid.NewGuid(),
-        //    DateTime.UtcNow,
-        //    user.FullName,
-        //    request.Email
-        //), cancellationToken);
+        await _bus.PublishAsync(new PasswordResetedIntegrationEvent(
+           Guid.NewGuid(),
+           DateTime.UtcNow,
+           user.FullName,
+           request.Email
+        ), cancellationToken);
 
         return Result.Success();
     }

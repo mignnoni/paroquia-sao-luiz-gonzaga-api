@@ -12,6 +12,7 @@ public class MassLocationsReadOnlySpec : Specification<MassLocation, MassLocatio
         Query
             .AsNoTracking()
             .AsSplitQuery()
+            .OrderBy(x => x.Name)
             .Skip(pageIndex * pageSize)
             .Take(pageSize)
             .Select(x => new MassLocationResponse(

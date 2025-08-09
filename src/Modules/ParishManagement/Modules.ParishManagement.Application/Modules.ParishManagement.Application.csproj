@@ -26,6 +26,12 @@
     <Folder Include="Masses\Schedules\UpdateSchedule\" />
     <Folder Include="Masses\Times\AddTimeToSchedule\" />
     <Folder Include="Masses\Times\RemoveTimeFromSchedule\" />
+    <Folder Include="OtherSchedules\" />
+    <Folder Include="OtherSchedules\DeleteOtherSchedule\" />
+    <Folder Include="OtherSchedules\GetOtherScheduleById\" />
+    <Folder Include="OtherSchedules\GetOtherSchedulesByType\" />
+    <Folder Include="OtherSchedules\GetOtherSchedules\" />
+    <Folder Include="OtherSchedules\UpdateOtherSchedule\" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,7 @@ namespace Modules.ParishManagement.Domain.Masses;
 
 public class MassSchedule : Entity<Guid>
 {
-    private MassSchedule(MassLocationId massLocationId, string day)
+    private MassSchedule(Guid id, MassLocationId massLocationId, string day) : base(id)
     {
         MassLocationId = massLocationId;
         Day = day;
@@ -20,9 +20,9 @@ public class MassSchedule : Entity<Guid>
     private readonly List<MassTime> _massTimes = [];
     public IReadOnlyCollection<MassTime> MassTimes => _massTimes.AsReadOnly();
 
-    public static MassSchedule Create(MassLocationId massLocationId, string day)
+    public static MassSchedule Create(Guid id, MassLocationId massLocationId, string day)
     {
-        return new MassSchedule(massLocationId, day);
+        return new MassSchedule(id, massLocationId, day);
     }
 
     internal Result AddMassTime(TimeOnly massTime)
@@ -30,7 +30,7 @@ public class MassSchedule : Entity<Guid>
         if (_massTimes.Any(t => t.Time == massTime))
             return Result.Error($"O horário de missa {massTime} já está cadastrado para o dia {Day}");
 
-        var time = MassTime.Create(Id, massTime);
+        var time = MassTime.Create(Guid.NewGuid(), Id, massTime);
 
         _massTimes.Add(time);
 
@@ -64,5 +64,6 @@ public class MassSchedule : Entity<Guid>
     internal void UpdateDay(string day)
     {
         Day = day;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

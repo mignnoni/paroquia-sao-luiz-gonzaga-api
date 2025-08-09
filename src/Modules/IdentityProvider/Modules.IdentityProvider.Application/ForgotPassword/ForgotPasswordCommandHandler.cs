@@ -35,13 +35,13 @@ internal sealed class ForgotPasswordCommandHandler(UserManager<User> userManager
 
         var base64Token = Convert.ToBase64String(bytes);
 
-        //await _bus.Publish(new ForgotPasswordIntegrationEvent(
-        //        Guid.NewGuid(),
-        //        DateTime.UtcNow,
-        //        user.FullName,
-        //        request.Email,
-        //        base64Token
-        //    ), cancellationToken);
+        await _bus.PublishAsync(new ForgotPasswordIntegrationEvent(
+               Guid.NewGuid(),
+               DateTime.UtcNow,
+               user.FullName,
+               request.Email,
+               base64Token
+           ), cancellationToken);
 
         return new ForgotPasswordResponse(request.Email, token);
     }

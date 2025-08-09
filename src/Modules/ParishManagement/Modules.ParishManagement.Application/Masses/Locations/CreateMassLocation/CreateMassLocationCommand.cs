@@ -19,13 +19,13 @@ public record MassScheduleInput(
     List<TimeOnly> MassTimes);
 
 internal class CreateMassLocationCommandHandler(
-    IRepository<MassLocation> _repository,
+    IMassLocationRepository _repository,
     IUnitOfWork _unitOfWork,
     ILogger<CreateMassLocationCommandHandler> _logger) : ICommandHandler<CreateMassLocationCommand>
 {
     public async Task<Result> Handle(CreateMassLocationCommand request, CancellationToken cancellationToken)
     {
-        var result = MassLocation.Create(request.Name, request.Address, request.IsHeadquarters);
+        var result = MassLocation.Create(new MassLocationId(Guid.NewGuid()), request.Name, request.Address, request.IsHeadquarters);
 
         if (!result.IsSuccess)
             return Result.Error(result.Errors.First());
