@@ -146,6 +146,10 @@ namespace Modules.ParishManagement.Persistence.Migrations
                         .HasColumnType("character varying(80)")
                         .HasColumnName("full_name");
 
+                    b.Property<Guid>("IdentityProviderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("identity_provider_id");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");

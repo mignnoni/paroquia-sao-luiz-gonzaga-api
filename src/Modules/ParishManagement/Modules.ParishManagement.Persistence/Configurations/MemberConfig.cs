@@ -17,6 +17,10 @@ public class MemberConfig : IEntityTypeConfiguration<Member>
             .HasConversion(x => x.Value, value => new MemberId(value));
 
         builder
+            .Property(x => x.IdentityProviderId)
+            .IsRequired();
+
+        builder
             .Property(x => x.FullName)
             .HasMaxLength(80)
             .IsRequired();

@@ -6,6 +6,7 @@ using Modules.IdentityProvider.Application.ForgotPassword;
 using Modules.IdentityProvider.Application.Login;
 using Modules.IdentityProvider.Application.Permissions.GetRolePermissions;
 using Modules.IdentityProvider.Application.ResetPassword;
+using Modules.IdentityProvider.Application.UpdatePassword;
 using Modules.IdentityProvider.Application.UpdateUser;
 using Modules.IdentityProvider.Endpoints.PublicAPI;
 using Modules.IdentityProvider.Endpoints.PublicAPI.Requests;
@@ -47,7 +48,7 @@ internal sealed class IdentityProviderEndpoints(ISender sender) : IIdentityProvi
 
     public async Task<Result<UserAuthenticatedResponse>> Login(LoginRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new LoginCommand(request.Email, request.Password, request.MemberId), cancellationToken);
+        var result = await _sender.Send(new LoginCommand(request.Email, request.Password), cancellationToken);
 
         return result.Map(response => new UserAuthenticatedResponse(
                     new UserAuthenticated(response.User.FullName, response.User.Email),
@@ -71,5 +72,14 @@ internal sealed class IdentityProviderEndpoints(ISender sender) : IIdentityProvi
     public Task<Result> DeleteUser(string id, CancellationToken cancellationToken = default)
     {
         return _sender.Send(new DeleteUserCommand(id), cancellationToken);
+    }
+
+    public Task<Result> UpdatePassword(UpdatePasswordRequest request, CancellationToken cancellationToken)
+    {
+        return _sender.Send(new UpdatePasswordCommand(
+            request.UserId,
+            request.CurrentPassword,
+            request.NewPassword,
+            request.ConfirmNewPassword), cancellationToken);
     }
 }

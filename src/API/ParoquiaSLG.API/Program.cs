@@ -1,38 +1,54 @@
 using Ardalis.Result.AspNetCore;
 using BuildingBlocks.Infrastructure.RabbitMQInfra;
 using BuildingBlocks.Persistence.Options;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+using BuildingBlocks.Utilities;
 using Modules.IdentityProvider.Infrastructure;
 using Modules.Notification.Infrastructure;
-using Modules.ParishManagement.Application.PendingMembers.AddPendingMember;
-using Modules.ParishManagement.Application.PendingMembers.GetPendingMembers;
 using Modules.ParishManagement.Infrastructure;
+using ParoquiaSLG.API.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string? allowedOrigins = SettingsUtils
+    .GetEnvironmentValueOrDefault("ALLOWED_HOSTS", builder.Configuration.GetSection("Cors:AllowedOrigins").Value ?? "");
+
 builder.Services
+    .AddCors(options =>
+    {
+        options.AddDefaultPolicy(
+            policy =>
+            {
+                policy
+                .WithOrigins(allowedOrigins?.Split(',') ?? [])
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+    });
+
+builder.Services
+    .AddMemoryCache()
     .ConfigureOptions<ConnectionStringSetup>()
     .AddRabbitMQ()
     .AddIdentityProviderModule(builder.Configuration)
     .AddParishManagementModule(builder.Configuration)
-    .AddNotificationModule();
+    .AddNotificationModule()
+    .AddAuth();
+
+builder.Services.AddControllers(mvcOptions => mvcOptions
+    .AddResultConvention(resultStatusMap => resultStatusMap
+        .AddDefaultMap()
+     ));
 
 var app = builder.Build();
 
+app.UseCors();
+
 app.UseHttpsRedirection();
 
-app.MapPost("/pendingMembers", async (AddPendingMemberCommand command, ISender sender) =>
-{
-    var result = await sender.Send(command);
+app.UseAuthentication();
 
-    return Results.Ok(result.ToMinimalApiResult());
-});
+app.UseAuthorization();
 
-app.MapGet("/pendingMembers", async ([FromQuery] int pageIndex, [FromQuery] int pageSize, ISender sender) =>
-{
-    var result = await sender.Send(new GetPendingMembersQuery(pageIndex, pageSize));
-    return Results.Ok(result.ToMinimalApiResult());
-});
+app.MapControllers();
 
 app.Run();

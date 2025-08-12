@@ -38,10 +38,9 @@ namespace Modules.IdentityProvider.Application.Login
             var claims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
-            var token = _jwtProvider.Generate(claims.ToList(), roles.ToList(), request.MemberId);
+            var token = _jwtProvider.Generate(claims.ToList(), roles.ToList());
 
             return new LoginResponse(new LoginUserResponse(user.FullName, request.Email), token);
-
         }
     }
 }

@@ -5,10 +5,11 @@ namespace Modules.ParishManagement.Domain.Members;
 
 public class Member : Entity<MemberId>
 {
-    private Member(MemberId id, string fullName, string email, MemberType type) : base(id)
+    private Member(MemberId id, Guid identityProviderId, string fullName, string email, MemberType type) : base(id)
     {
         FullName = fullName;
         Email = email;
+        IdentityProviderId = identityProviderId;
         Type = type;
         IsDeleted = false;
     }
@@ -18,17 +19,23 @@ public class Member : Entity<MemberId>
 
     public string FullName { get; private set; }
     public string Email { get; private set; }
+    public Guid IdentityProviderId { get; private set; }
     public MemberType Type { get; private set; }
     public bool IsDeleted { get; private set; }
 
-    public static Member Create(MemberId id, string fullName, string email, MemberType type)
+    public static Member Create(MemberId id, Guid identityProviderId, string fullName, string email, MemberType type)
     {
-        return new Member(id, fullName, email, type);
+        return new Member(id, identityProviderId, fullName, email, type);
     }
 
     public void SetName(string fullName)
     {
         FullName = fullName;
+    }
+
+    public void SetType(MemberType type)
+    {
+        Type = type;
     }
 
     public Result SetDeleted()

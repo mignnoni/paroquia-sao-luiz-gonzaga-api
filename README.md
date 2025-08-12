@@ -21,9 +21,8 @@ This API was specifically developed to manage the activities of **São Luiz Gonz
 
 - **Available Roles:**
   - `admin` - Full administrator
-  - `supervisor` - General supervisor
-  - `teamMember` - Team member
-  - `documents` - Document management
+  - `supervisor` - Manager
+  - `member` - Member
 
 ### 📊 **Parish Management Module (ParishManagement)**
 

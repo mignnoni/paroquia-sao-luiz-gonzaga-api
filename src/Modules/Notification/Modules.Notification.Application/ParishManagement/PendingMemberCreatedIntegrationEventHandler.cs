@@ -15,11 +15,11 @@ public class PendingMemberCreatedIntegrationEventHandler(
     {
         try
         {
-            //await _emailSender
-            //    .PendingMemberConfirmation(new PendingMemberConfirmationRequest(
-            //        integrationEvent.Email,
-            //        integrationEvent.FullName,
-            //        integrationEvent.Token), cancellationToken);
+            await _emailSender
+                .PendingMemberConfirmation(new PendingMemberConfirmationRequest(
+                    integrationEvent.Email,
+                    integrationEvent.FullName,
+                    integrationEvent.Token), cancellationToken);
         }
         catch (Exception ex)
         {

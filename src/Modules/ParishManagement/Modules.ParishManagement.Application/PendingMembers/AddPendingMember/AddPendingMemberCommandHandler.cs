@@ -27,9 +27,9 @@ internal class AddPendingMemberCommandHandler(
 
         var memberSpec = new MemberByEmailReadOnlySpec(request.Email);
 
-        var teamMemberExists = await _memberRepo.AnyAsync(memberSpec, cancellationToken);
+        var memberExists = await _memberRepo.AnyAsync(memberSpec, cancellationToken);
 
-        if (teamMemberExists)
+        if (memberExists)
             return Result.Error("O e-mail já está cadastrado para um membro da equipe");
 
         byte[] byteArray = Encoding.UTF8.GetBytes($"{Guid.NewGuid()}{DateTimeOffset.UtcNow}");

@@ -13,4 +13,5 @@ public interface IIdentityProviderEndpoints
     Task<Result<HashSet<string>>> GetPermissionsByRole(string roleName, CancellationToken cancellationToken = default);
     Task<Result> ResetPassword(ResetPasswordRequest request, CancellationToken cancellationToken = default);
     Task<Result> DeleteUser(string id, CancellationToken cancellationToken = default);
+    Task<Result> UpdatePassword(UpdatePasswordRequest request, CancellationToken cancellationToken = default);
 }

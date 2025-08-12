@@ -9,6 +9,7 @@ public class MemberByEmailReadOnlySpec : Specification<Member>
     {
         Query
             .Where(x => x.Email == email)
+            .Where(x => !x.IsDeleted)
             .AsNoTracking();
     }
 }

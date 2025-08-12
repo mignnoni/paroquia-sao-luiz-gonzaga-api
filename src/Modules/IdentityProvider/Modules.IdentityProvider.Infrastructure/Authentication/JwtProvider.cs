@@ -12,7 +12,7 @@ namespace Modules.IdentityProvider.Infrastructure.Authentication
     {
         private readonly JwtOptions _jwtOptions = options.Value;
 
-        public string Generate(List<Claim> claims, List<string> roles, string? memberId)
+        public string Generate(List<Claim> claims, List<string> roles)
         {
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(
@@ -22,7 +22,7 @@ namespace Modules.IdentityProvider.Infrastructure.Authentication
             var token = new JwtSecurityToken(
                     issuer: _jwtOptions.Issuer,
                     audience: _jwtOptions.Audience,
-                    claims: GetClaims(claims, roles, memberId),
+                    claims: GetClaims(claims, roles),
                     notBefore: DateTime.UtcNow,
                     expires: DateTime.UtcNow.AddDays(1),
                     signingCredentials: signingCredentials
@@ -31,12 +31,9 @@ namespace Modules.IdentityProvider.Infrastructure.Authentication
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private static List<Claim> GetClaims(List<Claim> claims, List<string> roles, string? memberId)
+        private static List<Claim> GetClaims(List<Claim> claims, List<string> roles)
         {
             claims.AddRoles(roles);
-
-            if (!string.IsNullOrEmpty(memberId))
-                claims.Add(new Claim("MemberId", memberId));
 
             return claims;
         }
