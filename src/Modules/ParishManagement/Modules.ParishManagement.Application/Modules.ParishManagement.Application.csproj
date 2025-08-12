@@ -30,7 +30,6 @@
     <Folder Include="OtherSchedules\" />
     <Folder Include="OtherSchedules\DeleteOtherSchedule\" />
     <Folder Include="OtherSchedules\GetOtherScheduleById\" />
-    <Folder Include="OtherSchedules\GetOtherSchedulesByType\" />
     <Folder Include="OtherSchedules\GetOtherSchedules\" />
     <Folder Include="OtherSchedules\UpdateOtherSchedule\" />
     <Folder Include="Specifications\" />

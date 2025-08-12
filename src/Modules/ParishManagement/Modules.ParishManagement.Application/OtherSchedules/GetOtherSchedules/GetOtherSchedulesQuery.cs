@@ -10,7 +10,8 @@ namespace Modules.ParishManagement.Application.OtherSchedules.GetOtherSchedules;
 
 public record GetOtherSchedulesQuery(
     int PageIndex = 0,
-    int PageSize = 10) : IQuery<List<OtherScheduleResponse>>;
+    int PageSize = 10,
+    ScheduleType? Type = null) : IQuery<List<OtherScheduleResponse>>;
 
 public record OtherScheduleResponse(
     Guid Id,
@@ -36,7 +37,7 @@ public class GetOtherSchedulesQueryHandler(
         if (request.PageIndex < 0)
             return Result.Error("O índice da página deve ser maior ou igual a 0");
 
-        var spec = new AllOtherSchedulesSpec(true);
+        var spec = new AllOtherSchedulesSpec(request.PageIndex, request.PageSize, request.Type, isReadOnly: true);
 
         var otherSchedules = await _repository.ListAsync(spec, cancellationToken) ?? [];
 
