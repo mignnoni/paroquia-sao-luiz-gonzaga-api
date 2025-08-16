@@ -31,7 +31,13 @@ public class MassLocationsController(ISender sender) : ControllerBase
     {
         var massSchedules = request.MassSchedules?.Select(ms => new MassScheduleInput(ms.Day, ms.MassTimes)).ToList() ?? [];
 
-        return await _sender.Send(new CreateMassLocationCommand(request.Name, request.Address, request.IsHeadquarters, massSchedules));
+        return await _sender.Send(new CreateMassLocationCommand(
+            request.Name, 
+            request.Address, 
+            request.Latitude,
+            request.Longitude,
+            request.IsHeadquarters, 
+            massSchedules));
     }
 
     [HasPermission(ParishManagementPermissions.ReadMassLocation)]
@@ -52,7 +58,13 @@ public class MassLocationsController(ISender sender) : ControllerBase
     [HttpPut("{id}")]
     public async Task<Result> UpdateMassLocation(Guid id, [FromBody] UpdateMassLocationRequest request)
     {
-        return await _sender.Send(new UpdateMassLocationCommand(id, request.Name, request.Address, request.IsHeadquarters));
+        return await _sender.Send(new UpdateMassLocationCommand(
+            id, 
+            request.Name, 
+            request.Address,
+            request.Latitude,
+            request.Longitude,
+            request.IsHeadquarters));
     }
 
     [HasPermission(ParishManagementPermissions.DeleteMassLocation)]

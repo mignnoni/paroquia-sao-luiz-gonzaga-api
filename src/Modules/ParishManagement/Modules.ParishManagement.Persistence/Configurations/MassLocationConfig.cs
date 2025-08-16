@@ -27,6 +27,14 @@ public class MassLocationConfig : IEntityTypeConfiguration<MassLocation>
             .IsRequired();
 
         builder
+            .Property(x => x.Latitude)
+            .IsRequired();
+
+        builder 
+            .Property(x => x.Longitude)
+            .IsRequired();
+
+        builder
             .Property(x => x.IsHeadquarters)
             .IsRequired();
 

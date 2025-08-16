@@ -1,7 +1,5 @@
 using Ardalis.Result;
 using BuildingBlocks.Application;
-using Modules.ParishManagement.Application.Abstractions;
-using Modules.ParishManagement.Application.OtherSchedules.GetOtherScheduleById;
 using Modules.ParishManagement.Application.OtherSchedules.Specifications;
 using Modules.ParishManagement.Domain.Abstractions;
 using Modules.ParishManagement.Domain.OtherSchedules;
@@ -19,12 +17,10 @@ public record OtherScheduleResponse(
     string Content,
     ScheduleType Type,
     DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    List<OtherScheduleFileResponse> Files);
+    DateTime? UpdatedAt);
 
 public class GetOtherSchedulesQueryHandler(
-    IOtherScheduleRepository _repository,
-    IS3Service _s3Service) : IQueryHandler<GetOtherSchedulesQuery, List<OtherScheduleResponse>>
+    IOtherScheduleRepository _repository) : IQueryHandler<GetOtherSchedulesQuery, List<OtherScheduleResponse>>
 {
     public async Task<Result<List<OtherScheduleResponse>>> Handle(GetOtherSchedulesQuery request, CancellationToken cancellationToken)
     {
@@ -47,12 +43,7 @@ public class GetOtherSchedulesQueryHandler(
             s.Content,
             s.Type,
             s.CreatedAt,
-            s.UpdatedAt,
-            s.Files.Select(f => new OtherScheduleFileResponse(
-                f.Id,
-                f.UploadInfo.FileName,
-                f.UploadInfo.ContentType,
-                _s3Service.GetPublicUrl(f.UploadInfo.FileName))).ToList() ?? [])).ToList() ?? [];
+            s.UpdatedAt)).ToList() ?? [];
 
         return Result.Success(response);
     }

@@ -18,7 +18,6 @@ public class AllOtherSchedulesSpec : Specification<OtherSchedule>
 
         Query
             .OrderByDescending(x => x.CreatedAt)
-            .Include(x => x.Files)
             .Skip(pageIndex * pageSize)
             .Take(pageSize);
     }

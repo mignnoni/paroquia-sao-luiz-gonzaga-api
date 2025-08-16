@@ -27,6 +27,10 @@ public class GetMassLocationsQueryHandler(
 
         var massLocations = await _repository.ListAsync(spec, cancellationToken) ?? [];
 
-        return Result.Success(massLocations);
+        return massLocations.Select(s => new MassLocationResponse(
+            s.Id.Value,
+            s.Name,
+            s.Address,
+            s.IsHeadquarters)).ToList();
     }
 }

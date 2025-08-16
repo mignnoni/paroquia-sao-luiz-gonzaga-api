@@ -11,6 +11,8 @@ public record UpdateMassLocationCommand(
     Guid Id,
     string Name,
     string Address,
+    double Latitude,
+    double Longitude,
     bool IsHeadquarters) : ICommand;
 
 internal class UpdateMassLocationCommandHandler(
@@ -33,7 +35,12 @@ internal class UpdateMassLocationCommandHandler(
             headquarters?.SetIsHeadquarters(false);
         }
 
-        var result = massLocation.Update(request.Name, request.Address, request.IsHeadquarters);
+        var result = massLocation.Update(
+            request.Name, 
+            request.Address,
+            request.Latitude,
+            request.Longitude,
+            request.IsHeadquarters);
 
         if (!result.IsSuccess)
             return result;

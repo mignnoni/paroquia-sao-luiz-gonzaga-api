@@ -23,5 +23,17 @@ public class UpdateMassLocationValidator : AbstractValidator<UpdateMassLocationC
             .WithMessage("Endereço da localização é obrigatório")
             .MaximumLength(200)
             .WithMessage("O endereço da localização não pode ter mais de 200 caracteres");
+
+        RuleFor(c => c.Latitude)
+            .NotEmpty()
+            .WithMessage("Endereço da localização é obrigatório")
+            .ExclusiveBetween(-90, 90)
+            .WithMessage("Informe um endereço válido");
+
+        RuleFor(c => c.Longitude)
+            .NotEmpty()
+            .WithMessage("Endereço da localização é obrigatório")
+            .ExclusiveBetween(-180, 180)
+            .WithMessage("Informe um endereço válido");
     }
 }

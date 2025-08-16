@@ -2,5 +2,6 @@ namespace Modules.ParishManagement.Application.Masses.Locations.GetMassLocationB
 
 public record MassTimeResponse(
     Guid Id,
+    Guid MassScheduleId,
     TimeOnly Time
 );

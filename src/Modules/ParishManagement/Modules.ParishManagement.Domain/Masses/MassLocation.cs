@@ -5,11 +5,13 @@ namespace Modules.ParishManagement.Domain.Masses;
 
 public class MassLocation : Entity<MassLocationId>
 {
-    private MassLocation(MassLocationId id, string name, string address, bool isHeadquarters) : base(id)
+    private MassLocation(MassLocationId id, string name, string address, double latitude, double longitude, bool isHeadquarters) : base(id)
     {
         Name = name;
         Address = address;
         IsHeadquarters = isHeadquarters;
+        Latitude = latitude;
+        Longitude = longitude;
     }
 
     // EF Core
@@ -17,12 +19,14 @@ public class MassLocation : Entity<MassLocationId>
 
     public string Name { get; private set; }
     public string Address { get; private set; }
+    public double Latitude { get; private set; }
+    public double Longitude { get; private set; }
     public bool IsHeadquarters { get; private set; }
 
     private readonly List<MassSchedule> _massSchedules = [];
     public IReadOnlyCollection<MassSchedule> MassSchedules => _massSchedules.AsReadOnly();
 
-    public static Result<MassLocation> Create(MassLocationId id, string name, string address, bool isHeadquarters)
+    public static Result<MassLocation> Create(MassLocationId id, string name, string address, double latitude, double longitude, bool isHeadquarters)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result.Error("Nome da localização é obrigatório");
@@ -30,10 +34,10 @@ public class MassLocation : Entity<MassLocationId>
         if (string.IsNullOrWhiteSpace(address))
             return Result.Error("Endereço da localização é obrigatório");
 
-        return Result.Success(new MassLocation(id, name, address, isHeadquarters));
+        return Result.Success(new MassLocation(id, name, address, latitude, longitude, isHeadquarters));
     }
 
-    public Result Update(string name, string address, bool isHeadquarters)
+    public Result Update(string name, string address, double latitude, double longitude, bool isHeadquarters)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result.Error("Nome da localização é obrigatório");
@@ -44,6 +48,8 @@ public class MassLocation : Entity<MassLocationId>
         Name = name;
         Address = address;
         IsHeadquarters = isHeadquarters;
+        Latitude = latitude;
+        Longitude = longitude;
         UpdatedAt = DateTime.UtcNow;
 
         return Result.Success();

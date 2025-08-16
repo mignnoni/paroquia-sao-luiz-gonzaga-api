@@ -28,5 +28,17 @@ public class CreateMassLocationValidator : AbstractValidator<CreateMassLocationC
                     .MaximumLength(50)
                     .WithMessage("O dia da programação de missas não pode ter mais de 50 caracteres");
             });
+
+        RuleFor(c => c.Latitude)
+            .NotEmpty()
+            .WithMessage("Endereço da localização é obrigatório")
+            .ExclusiveBetween(-90, 90)
+            .WithMessage("Informe um endereço válido");
+
+        RuleFor(c => c.Longitude)
+            .NotEmpty()
+            .WithMessage("Endereço da localização é obrigatório")
+            .ExclusiveBetween(-180, 180)
+            .WithMessage("Informe um endereço válido");
     }
 }

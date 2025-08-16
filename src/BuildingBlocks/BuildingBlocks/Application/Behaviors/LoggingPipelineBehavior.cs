@@ -16,24 +16,39 @@ public sealed class LoggingPipelineBehavior<TRequest, TResponse>(
         {
             var resultType = typeof(TResponse).GetGenericArguments()[0];
 
-            var errorsProperty = typeof(Result<>)
+            var isSuccessProperty = typeof(Result<>)
                 .MakeGenericType(resultType)
-                .GetProperty(nameof(Result.Errors));
+                .GetProperty(nameof(Result.IsSuccess))
+                ?.GetValue(response) as bool?;
 
-            if (errorsProperty is not null && errorsProperty.GetValue(response) is not null)
+            if (isSuccessProperty is not null && !isSuccessProperty.Value)
             {
-                var errors = errorsProperty.GetValue(response);
-                _logger.LogError("Erro ao executar {Request}: {Errors}", typeof(TRequest).Name, errors);
+                var errorsProperty = typeof(Result<>)
+                    .MakeGenericType(resultType)
+                    .GetProperty(nameof(Result.Errors));
+
+                if (errorsProperty is not null && errorsProperty.GetValue(response) is not null)
+                {
+                    var errors = errorsProperty.GetValue(response);
+                    _logger.LogError("Erro ao executar {Request}: {Errors}", typeof(TRequest).Name, errors);
+                }
             }
         }
         else if (typeof(TResponse) == typeof(Result))
         {
-            var errorsProperty = typeof(Result).GetProperty(nameof(Result.Errors));
+            var isSuccessProperty = typeof(Result)
+                .GetProperty(nameof(Result.IsSuccess))
+                ?.GetValue(response) as bool?;
 
-            if (errorsProperty is not null && errorsProperty.GetValue(response) is not null)
+            if (isSuccessProperty is not null && !isSuccessProperty.Value)
             {
-                var errors = errorsProperty.GetValue(response);
-                _logger.LogError("Erro ao executar {Request}: {Errors}", typeof(TRequest).Name, errors);
+                var errorsProperty = typeof(Result).GetProperty(nameof(Result.Errors));
+
+                if (errorsProperty is not null && errorsProperty.GetValue(response) is not null)
+                {
+                    var errors = errorsProperty.GetValue(response);
+                    _logger.LogError("Erro ao executar {Request}: {Errors}", typeof(TRequest).Name, errors);
+                }
             }
         }
 

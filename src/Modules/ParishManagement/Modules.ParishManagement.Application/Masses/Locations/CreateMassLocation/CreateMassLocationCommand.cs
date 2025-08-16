@@ -11,6 +11,8 @@ namespace Modules.ParishManagement.Application.Masses.Locations.CreateMassLocati
 public record CreateMassLocationCommand(
     string Name,
     string Address,
+    double Latitude,
+    double Longitude,
     bool IsHeadquarters,
     List<MassScheduleInput> MassSchedules) : ICommand;
 
@@ -25,7 +27,14 @@ internal class CreateMassLocationCommandHandler(
 {
     public async Task<Result> Handle(CreateMassLocationCommand request, CancellationToken cancellationToken)
     {
-        var result = MassLocation.Create(new MassLocationId(Guid.NewGuid()), request.Name, request.Address, request.IsHeadquarters);
+        var result = MassLocation.Create(
+            new MassLocationId(
+                Guid.NewGuid()), 
+                request.Name, 
+                request.Address, 
+                request.Latitude, 
+                request.Longitude, 
+                request.IsHeadquarters);
 
         if (!result.IsSuccess)
             return Result.Error(result.Errors.First());

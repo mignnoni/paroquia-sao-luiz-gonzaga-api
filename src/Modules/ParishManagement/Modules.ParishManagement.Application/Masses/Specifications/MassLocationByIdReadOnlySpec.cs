@@ -17,11 +17,14 @@ public class MassLocationByIdReadOnlySpec : Specification<MassLocation, MassLoca
                 x.Id.Value,
                 x.Name,
                 x.Address,
+                x.Latitude,
+                x.Longitude,
                 x.IsHeadquarters,
                 x.MassSchedules.Select(y => new MassScheduleResponse(
                     y.Id,
+                    y.MassLocationId.Value,
                     y.Day,
-                    y.MassTimes.Select(z => new MassTimeResponse(z.Id, z.Time)).ToList()
+                    y.MassTimes.Select(z => new MassTimeResponse(z.Id, z.MassScheduleId, z.Time)).ToList()
                 )).ToList()
             ));
     }
