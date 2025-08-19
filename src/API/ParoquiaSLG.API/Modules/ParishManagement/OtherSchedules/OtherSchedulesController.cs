@@ -12,6 +12,7 @@ using ParoquiaSLG.API.Authorization;
 using ParoquiaSLG.API.Modules.ParishManagement.OtherSchedules.Contracts;
 using Modules.ParishManagement.Domain.OtherSchedules;
 using OtherSchedulesResponse = Modules.ParishManagement.Application.OtherSchedules.GetOtherSchedules.OtherScheduleResponse;
+using Modules.ParishManagement.Application.OtherSchedules.GetFirstOtherScheduleByType;
 
 namespace ParoquiaSLG.API.Modules.ParishManagement.OtherSchedules;
 
@@ -36,7 +37,7 @@ public class OtherSchedulesController(ISender sender) : ControllerBase
                     return Result.Error($"O arquivo {file.FileName} excede o tamanho máximo permitido (10MB)");
 
                 using var stream = file.OpenReadStream();
-                using var memoryStream = new MemoryStream();
+                var memoryStream = new MemoryStream();
 
                 await stream.CopyToAsync(memoryStream);
                 memoryStream.Position = 0;
@@ -79,7 +80,7 @@ public class OtherSchedulesController(ISender sender) : ControllerBase
                     return Result.Error($"O arquivo {file.FileName} excede o tamanho máximo permitido (10MB)");
 
                 using var stream = file.OpenReadStream();
-                using var memoryStream = new MemoryStream();
+                var memoryStream = new MemoryStream();
 
                 await stream.CopyToAsync(memoryStream);
                 memoryStream.Position = 0;
@@ -96,5 +97,12 @@ public class OtherSchedulesController(ISender sender) : ControllerBase
     public async Task<Result> DeleteOtherSchedule(Guid id)
     {
         return await _sender.Send(new DeleteOtherScheduleCommand(id));
+    }
+
+    [HasPermission(ParishManagementPermissions.ReadOtherSchedule)]
+    [HttpGet("first/{type}")]
+    public async Task<Result<OtherScheduleByIdResponse>> GetFirstByType(ScheduleType type)
+    {
+        return await _sender.Send(new GetFirstOtherScheduleByTypeQuery(type));
     }
 }

@@ -72,6 +72,13 @@ internal class CreateOtherScheduleCommandHandler(
             _logger.LogError(ex, "Erro ao criar programação");
             return Result.Error("Erro ao criar programação");
         }
+        finally
+        {
+            foreach (var file in request.Files)
+            {
+                file.FileStream?.Dispose();
+            }
+        }
 
         return Result.Success();
     }

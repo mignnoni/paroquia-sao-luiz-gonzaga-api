@@ -21,8 +21,7 @@ public class S3Service(
             InputStream = file,
             Key = fileName,
             BucketName = _bucketName,
-            ContentType = contentType,
-            CannedACL = S3CannedACL.PublicRead
+            ContentType = contentType
         };
 
         await transferUtility.UploadAsync(uploadRequest, cancellationToken);

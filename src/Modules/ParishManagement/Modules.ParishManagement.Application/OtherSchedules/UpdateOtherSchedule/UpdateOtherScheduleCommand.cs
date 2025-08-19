@@ -77,6 +77,13 @@ internal class UpdateOtherScheduleCommandHandler(
             _logger.LogError(ex, "Erro ao atualizar programação");
             return Result.Error("Erro ao atualizar programação");
         }
+        finally
+        {
+            foreach (var file in request.FilesToAdd)
+            {
+                file.FileStream?.Dispose();
+            }
+        }
 
         if (filesToRemoveFromS3.Count > 0)
         {
