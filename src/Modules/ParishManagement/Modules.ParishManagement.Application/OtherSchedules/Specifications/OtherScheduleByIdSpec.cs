@@ -9,6 +9,7 @@ public class OtherScheduleByIdSpec : Specification<OtherSchedule>
     {
         Query
             .Where(x => x.Id == id)
+            .Include(i => i.Files)
             .AsNoTracking(isReadOnly);
     }
 }
