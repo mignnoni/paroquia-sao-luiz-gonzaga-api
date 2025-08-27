@@ -23,7 +23,7 @@ public class GetMassLocationsQueryHandler(
         if (request.PageIndex < 0)
             return Result.Error("O índice da página deve ser maior ou igual a 0");
 
-        var spec = new MassLocationsReadOnlySpec(request.PageIndex, request.PageSize);
+        var spec = new MassLocationsReadOnlySpec(request.PageIndex, request.PageSize, includeRelatedEntities: true);
 
         var massLocations = await _repository.ListAsync(spec, cancellationToken) ?? [];
 

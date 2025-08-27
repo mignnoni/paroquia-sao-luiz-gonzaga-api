@@ -9,6 +9,7 @@ using Modules.ParishManagement.Application.OtherSchedules.Public.GetNewsById;
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherScheduleById;
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherSchedules;
 using Modules.ParishManagement.Domain.OtherSchedules;
+using Modules.ParishManagement.Application.OtherSchedules.Public.GetFirstOtherScheduleByType;
 
 namespace ParoquiaSLG.API.Modules.Public;
 
@@ -53,5 +54,11 @@ public class PublicController(ISender sender) : ControllerBase
     public async Task<Result<OtherScheduleResponse>> GetOtherScheduleById(Guid id)
     {
         return await _sender.Send(new GetOtherScheduleByIdQuery(id));
+    }
+
+    [HttpGet("other-schedules/first-by-type")]
+    public async Task<Result<OtherScheduleResponse>> GetFirstOtherScheduleByType([FromQuery] ScheduleType type)
+    {
+        return await _sender.Send(new GetFirstOtherScheduleByTypeQuery(type));
     }
 }
