@@ -5,6 +5,4 @@ namespace ParoquiaSLG.API.Modules.ParishManagement.OtherSchedules.Contracts;
 public record UpdateOtherScheduleRequest(
     string Title,
     string Content,
-    ScheduleType Type,
-    IFormFileCollection? FilesToAdd = null,
-    List<Guid>? FilesToRemove = null);
+    ScheduleType Type);

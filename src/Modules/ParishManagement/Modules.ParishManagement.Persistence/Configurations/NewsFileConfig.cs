@@ -1,13 +1,12 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Modules.ParishManagement.Domain.OtherSchedules;
+using Modules.ParishManagement.Domain.NewsFolder;
 
 namespace Modules.ParishManagement.Persistence.Configurations;
 
-public class OtherScheduleFileConfig : IEntityTypeConfiguration<OtherScheduleFile>
+public class NewsFileConfig : IEntityTypeConfiguration<NewsFile>
 {
-    public void Configure(EntityTypeBuilder<OtherScheduleFile> builder)
+    public void Configure(EntityTypeBuilder<NewsFile> builder)
     {
         builder
             .HasKey(x => x.Id);
@@ -17,7 +16,7 @@ public class OtherScheduleFileConfig : IEntityTypeConfiguration<OtherScheduleFil
             .ValueGeneratedNever();
 
         builder
-            .Property(x => x.OtherScheduleId)
+            .Property(x => x.NewsId)
             .IsRequired();
 
         builder
@@ -32,9 +31,9 @@ public class OtherScheduleFileConfig : IEntityTypeConfiguration<OtherScheduleFil
             .Property(x => x.UpdatedAt);
 
         builder
-            .HasOne<OtherSchedule>()
+            .HasOne<News>()
             .WithMany(x => x.Files)
-            .HasForeignKey(x => x.OtherScheduleId)
+            .HasForeignKey(x => x.NewsId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace Modules.ParishManagement.Application.OtherSchedules.UpdateOtherSchedule;
+namespace Modules.ParishManagement.Application.NewsFolder.UpdateNews;
 
-public class UpdateOtherScheduleCommandValidator : AbstractValidator<UpdateOtherScheduleCommand>
+public class UpdateNewsCommandValidator : AbstractValidator<UpdateNewsCommand>
 {
-    public UpdateOtherScheduleCommandValidator()
+    public UpdateNewsCommandValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty()
@@ -22,8 +22,14 @@ public class UpdateOtherScheduleCommandValidator : AbstractValidator<UpdateOther
             .NotEmpty()
             .WithMessage("Conteúdo é obrigatório");
 
-        RuleFor(x => x.Type)
-            .IsInEnum()
-            .WithMessage("Tipo de programação é inválido");
+        RuleFor(x => x.Summary)
+            .NotEmpty()
+            .WithMessage("Resumo é obrigatório")
+            .MaximumLength(200)
+            .WithMessage("O resumo não pode ter mais de 200 caracteres");
+
+        RuleFor(x => x.FilesToAdd)
+            .Must(x => x.Count <= 5)
+            .WithMessage("Só é possível adicionar até 5 arquivos por vez");
     }
 }

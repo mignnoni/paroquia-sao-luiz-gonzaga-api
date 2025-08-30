@@ -29,8 +29,7 @@ public class GetFirstOtherScheduleByTypeQueryHandler(
             otherSchedule.Content,
             otherSchedule.Type,
             otherSchedule.CreatedAt,
-            otherSchedule.UpdatedAt,
-            []);
+            otherSchedule.UpdatedAt);
 
         return Result.Success(response);
     }

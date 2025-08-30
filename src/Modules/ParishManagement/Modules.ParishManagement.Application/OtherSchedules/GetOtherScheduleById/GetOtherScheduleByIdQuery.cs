@@ -15,18 +15,10 @@ public record OtherScheduleByIdResponse(
     string Content,
     ScheduleType Type,
     DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    List<OtherScheduleFileResponse> Files);
-
-public record OtherScheduleFileResponse(
-    Guid Id,
-    string Name,
-    string ContentType,
-    string Url);
+    DateTime? UpdatedAt);
 
 public class GetOtherScheduleByIdQueryHandler(
-    IOtherScheduleRepository _repository,
-    IS3Service _s3Service) : IQueryHandler<GetOtherScheduleByIdQuery, OtherScheduleByIdResponse>
+    IOtherScheduleRepository _repository) : IQueryHandler<GetOtherScheduleByIdQuery, OtherScheduleByIdResponse>
 {
     public async Task<Result<OtherScheduleByIdResponse>> Handle(GetOtherScheduleByIdQuery request, CancellationToken cancellationToken)
     {
@@ -39,20 +31,13 @@ public class GetOtherScheduleByIdQueryHandler(
         if (otherSchedule is null)
             return Result.Error("Programação não encontrada");
 
-        var files = otherSchedule.Files.Select(f => new OtherScheduleFileResponse(
-            f.Id,
-            f.UploadInfo.FileName,
-            f.UploadInfo.ContentType,
-            _s3Service.GetPublicUrl(f.UploadInfo.FileName))).ToList() ?? [];
-
         var response = new OtherScheduleByIdResponse(
             otherSchedule.Id.Value,
             otherSchedule.Title,
             otherSchedule.Content,
             otherSchedule.Type,
             otherSchedule.CreatedAt,
-            otherSchedule.UpdatedAt,
-            files);
+            otherSchedule.UpdatedAt);
 
         return Result.Success(response);
     }

@@ -10,7 +10,6 @@ public class OtherSchedulesByTypeSpec : Specification<OtherSchedule>
         Query
             .Where(x => x.Type == type)
             .OrderByDescending(x => x.CreatedAt)
-            .Include(x => x.Files)
             .AsNoTracking(isReadOnly);
     }
 }

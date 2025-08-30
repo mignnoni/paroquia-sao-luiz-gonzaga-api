@@ -4,8 +4,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Modules.ParishManagement.Application.Masses.Locations.Public.GetMassLocations;
 using Modules.ParishManagement.Application.Masses.Locations.Public.GetMassLocationHeadquarters;
-using Modules.ParishManagement.Application.OtherSchedules.Public.GetNews;
-using Modules.ParishManagement.Application.OtherSchedules.Public.GetNewsById;
+using Modules.ParishManagement.Application.NewsFolder.Public.GetNews;
+using Modules.ParishManagement.Application.NewsFolder.Public.GetNewsById;
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherScheduleById;
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherSchedules;
 using Modules.ParishManagement.Domain.OtherSchedules;
@@ -39,7 +39,7 @@ public class PublicController(ISender sender) : ControllerBase
     }
 
     [HttpGet("news/{id}")]
-    public async Task<Result<NewsResponse>> GetNewsById(Guid id)
+    public async Task<Result<NewsByIdResponse>> GetNewsById(Guid id)
     {
         return await _sender.Send(new GetNewsByIdQuery(id));
     }

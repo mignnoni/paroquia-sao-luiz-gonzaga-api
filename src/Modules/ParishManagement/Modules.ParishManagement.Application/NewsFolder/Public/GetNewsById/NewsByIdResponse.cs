@@ -1,9 +1,12 @@
-namespace Modules.ParishManagement.Application.OtherSchedules.Public.GetNews;
+namespace Modules.ParishManagement.Application.NewsFolder.Public.GetNewsById;
 
-public record NewsResponse(
+public record NewsByIdResponse(
     Guid Id,
     string Title,
     string Content,
+    bool Highlight,
+    DateTime? HighlightUntil,
+    string Summary,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
     List<NewsFileResponse> Files);
