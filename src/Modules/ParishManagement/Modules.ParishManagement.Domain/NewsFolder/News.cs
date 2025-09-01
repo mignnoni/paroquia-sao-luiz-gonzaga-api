@@ -65,6 +65,14 @@ public class News : Entity<NewsId>
         return Result.Success();
     }
 
+    public void Unhighlight()
+    {
+        Highlight = false;
+        HighlightUntil = null;
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void AddFiles(List<UploadInfo> files)
     {
         foreach (var file in files)

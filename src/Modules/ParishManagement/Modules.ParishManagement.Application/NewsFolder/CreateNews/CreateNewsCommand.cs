@@ -3,6 +3,7 @@ using BuildingBlocks.Application;
 using BuildingBlocks.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Modules.ParishManagement.Application.Abstractions;
+using Modules.ParishManagement.Application.NewsFolder.Specifications;
 using Modules.ParishManagement.Domain.Abstractions;
 using Modules.ParishManagement.Domain.NewsFolder;
 
@@ -28,6 +29,15 @@ internal class CreateNewsCommandHandler(
     {
         if (request.Files.Count > MAX_FILES)
             return Result.Error("Só é possível adicionar até 5 arquivos	por vez");
+
+        if (request.Highlight)
+        {
+            var spec = new HighlightedNewsSpec();
+
+            var highlightedNews = await _repository.FirstOrDefaultAsync(spec, cancellationToken);
+
+            highlightedNews?.Unhighlight();
+        }
 
         var result = News.Create(
             new NewsId(Guid.NewGuid()),

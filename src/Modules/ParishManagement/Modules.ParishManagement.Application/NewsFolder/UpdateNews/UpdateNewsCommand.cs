@@ -44,6 +44,15 @@ internal class UpdateNewsCommandHandler(
             .Select(f => f.UploadInfo.FileName)
             .ToList() ?? [];
 
+        if (!news.Highlight && request.Highlight)
+        {
+            var highlightedNewsSpec = new HighlightedNewsSpec();
+
+            var highlightedNews = await _repository.FirstOrDefaultAsync(highlightedNewsSpec, cancellationToken);
+
+            highlightedNews?.Unhighlight();
+        }
+
         var result = news.Update(request.Title, request.Content, request.Highlight, request.HighlightUntil, request.Summary, request.FilesToRemove);
 
         if (!result.IsSuccess)

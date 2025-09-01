@@ -10,6 +10,7 @@ using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherSchedul
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetOtherSchedules;
 using Modules.ParishManagement.Domain.OtherSchedules;
 using Modules.ParishManagement.Application.OtherSchedules.Public.GetFirstOtherScheduleByType;
+using Modules.ParishManagement.Application.NewsFolder.Public.GetHighlightedNews;
 
 namespace ParoquiaSLG.API.Modules.Public;
 
@@ -42,6 +43,12 @@ public class PublicController(ISender sender) : ControllerBase
     public async Task<Result<NewsByIdResponse>> GetNewsById(Guid id)
     {
         return await _sender.Send(new GetNewsByIdQuery(id));
+    }
+
+    [HttpGet("news/highlighted")]
+    public async Task<Result<NewsByIdResponse?>> GetHighlightedNews()
+    {
+        return await _sender.Send(new GetHighlightedNewsQuery());
     }
 
     [HttpGet("other-schedules")]
